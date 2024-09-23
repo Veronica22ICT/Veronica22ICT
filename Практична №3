@@ -1,0 +1,18 @@
+fruits = {
+    1: "apple",
+    2: "banana",
+    3: "cherry",
+    4: "date",
+    5: "elderberry",
+    6: "fig",
+    7: "grape",
+    8: "honeydew",
+    9: "kiwi",
+    10: "lemon"
+}
+fruits[2] = "blueberry"
+fruits[7] = "guava"
+
+del fruits[3]
+fruits[4] = None
+print("Оновлений словник:", fruits)
