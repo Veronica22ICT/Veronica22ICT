@@ -1,0 +1,19 @@
+import telebot
+bot = telebot.TeleBot('8105635144:AAHUs9IOrud3CHLB0L_p8ZMW09vVcxrMMBg')
+@bot.message_handler(commands = ['start'])
+def start (message):
+    bot.send_message(message.chat.id,'Вітаю,бажаєте поспілкуватися?')
+
+
+@bot.message_handler(commands = ['stop'])
+def stop (message):
+    bot.send_message(message.chat.id,'Чат зупинено')
+    bot.stop_polling()
+
+
+@bot.message_handler()
+def replay(message):
+    for i in range(1):
+     bot.reply_to(message,message.text)
+
+bot.polling(non_stop=True)
