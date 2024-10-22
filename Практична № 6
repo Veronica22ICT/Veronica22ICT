@@ -1,0 +1,89 @@
+import telebot
+
+bot = telebot.TeleBot('7625911800:AAGK0tIxiQaEs9mT5L7xyCz88rBEP-u8nhE')
+
+
+def universal(message, text, buttons):
+    keyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
+    for item in buttons:
+        button = telebot.types.KeyboardButton(item)
+        keyboard.add(button)
+    for t in text:
+        bot.send_message(message.chat.id, t, reply_markup=keyboard)
+
+
+@bot.message_handler(commands=['start'])
+def start (message):
+    universal(message=message,
+              text=['Вас вітає бот з рекомендаціям по рибалці)', 'Можу запропонувати місце для риболовлі)'],
+              buttons=['Місце риболовлі'])
+
+
+@bot.message_handler(content_types=['text'])
+def options(message):
+    if message.text == 'Місце риболовлі':
+        universal(message=message, text=['Оберіть куди ви хочете їхати'],
+                  buttons=['р.Стир', 'о.Ухове', 'р.Лютиця'])
+    elif message.text == 'р.Стир':
+        universal(message=message, text=['Оберіть що ви хочете переглянути:'],
+                  buttons=['Погода', 'Головне меню', 'Приколюхи'])
+    elif message.text == 'о.Ухове':
+        universal(message=message, text=['Оберіть що ви хочете переглянути:'],
+                  buttons=['Погода', 'Головне меню', 'Приколюхи'])
+    elif message.text == 'р.Лютиця':
+        universal(message=message, text=['Оберіть що ви хочете переглянути:'],
+                  buttons=['Погода', 'Головне меню', 'Приколюхи'])
+    elif message.text == 'Погода':
+        universal(message=message, text=['Оберіть місце погоди:'],
+                  buttons=['Погода р.Стир', 'Погода о.Ухове', 'Погода р.Лютиця', 'Головне меню'])
+    elif message.text == 'Погода р.Стир':
+        universal(message=message, text=['https://ua.sinoptik.ua/\
+        %D0%BF%D0%BE%D0%B3%D0%BE%D0%B4%D0%B0-%D0%BB%D1%83%D1%86%D1%8C%D0%BA '],
+                  buttons=['Сонячно', 'Дощ', 'Головне меню'])
+    elif message.text == 'Погода о.Ухове':
+        universal(message=message, text=['https://ua.sinoptik.ua/\
+        %D0%BF%D0%BE%D0%B3%D0%BE%D0%B4%D0%B0-%D1%83%D1%85%D0%BE%D0%B2%D0%B5%D1%86%D1%8C%D0%BA '],
+                  buttons=['Сонячно', 'Дощ', 'Головне меню'])
+    elif message.text == 'Погода р.Лютиця':
+        universal(message=message, text=['https://ua.sinoptik.ua/\
+        %D0%BF%D0%BE%D0%B3%D0%BE%D0%B4%D0%B0-%D0%BA%D0%BE%D0%B7%D0%B8%D0%BD-303011314 '],
+                  buttons=['Сонячно', 'Дощ', 'Головне меню'])
+    elif message.text == 'Головне меню':
+        universal(message=message, text=['Оберіть куди ви хочете повернутися:'],
+                  buttons=['Місце риболовлі', 'Приколюхи', 'Погода'])
+    elif message.text == 'Повернутися':
+        universal(message=message, text=['Оберіть категорію куди ви хочете повернутися:'],
+                  buttons=['Головне меню', 'Сонячно', 'Дощ', 'Приманки', 'Насадка'])
+    elif message.text == 'Приколюхи':
+        universal(message=message,
+                  text=['Якщо хочеш провести свою риболовлю з пригодами на 5 точку, тоді переходь по цих\
+                   посиланні і не дякуй )',
+                        'А якщо ти звичайний зануда який любить просто ловити рибу без пригод то нажимай \
+                        кнопку Меню  і шуруй звідси)',
+                        'https://www.atbmarket.com/catalog/292-alkogol-i-tyutyun',
+                        'https://www.atbmarket.com/catalog/maso'],
+                  buttons=['Головне меню'])
+    elif message.text == 'Сонячно':
+        universal(message=message, text=['Погода хорошат і зараз можливо буде чудовий кльов мирної риби тому\
+         рекомендую оснаститися поплавочною, донною або фідерною вудилищами. Або якщо ви хочете спробувати щось\
+          нове я залишу силку де можна купити нові снасті)','https://fanatik.com.ua/'],
+                  buttons=['Насадка', 'Головне меню'])
+    elif message.text == 'Дощ':
+        universal(message=message, text=['Оскільки зараз прохолодно то більш активною є хижа риба, \
+        Тому рекомендую оснаститися спінінгом. Або якщо ви хочете спробувати щось нове я залишу силку де \
+        можна купити нові снасті)','https://fanatik.com.ua/'],
+                  buttons=['Приманки', 'Головне меню'])
+    elif message.text == 'Приманки':
+        universal(message=message, text=['З собою можна взяти багатотріних наживок таких як:воблер, \
+        твістер, блешня або живець.Дивлячись яку саме рибу ви хочете виманити. Або якщо ви хочете все зробити\
+         швидко я залишу силку де можна купити чудові приманки)','https://fanatik.com.ua/'],
+                  buttons=['Повернутися', 'Головне меню'])
+    elif message.text == 'Насадка':
+        universal(message=message, text=['Оскільки зараз тепло рекомендую такі насадки як: опариш, \
+        кукурудза або тісто.А якщо ви їдете на крупну рибу то можна використовувати бойли або кук. Дивлячись \
+        яку саме рибу ви хочете виманити. Або якщо ви хочете все зробити швидко я залишу силку де можна купити\
+         чудові приманки)','https://fanatik.com.ua/'],
+                  buttons=['Повернутися', 'Головне меню'])
+
+
+bot.polling(non_stop=True)
