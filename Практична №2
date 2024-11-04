@@ -6,4 +6,4 @@ if type(name) == type(lastname):
     print("Тип даних імені та прізвища:", type(name))
 print(' '.join([name, lastname]))
 if isinstance(age, int):
-    print("Тип даних віку: ",type(age))
+    print("Тип даних віку: ", type(age))
