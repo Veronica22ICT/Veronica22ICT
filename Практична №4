@@ -5,7 +5,7 @@ def sort_list(lst):
     return sorted(lst, key=lambda x: (isinstance(x, str), x))
 
 list1 = [1, 2, 3, 4,11, 5, 6, 3, 4,0, 5, 7, 24,6, 5, 4, 3, 4,67, 5, 4, 3,'привіт', 'анаконда','вода','стеля']
-peeled= remove_duplicates(list1)
-sorted = sort_list(peeled)
-print("Список без повторень:",peeled)
+p = remove_duplicates(list1)
+sorted = sort_list(p)
+print("Список без повторень:",p)
 print("Відсортований список:",sorted)
