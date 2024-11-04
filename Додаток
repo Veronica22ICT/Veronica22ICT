@@ -1,0 +1,15 @@
+import requests
+from bs4 import BeautifulSoup as bs
+
+
+def req():
+    url = 'https://ua.sinoptik.ua/%D0%BF%D0%BE%D0%B3%D0%BE%D0%B4%D0%B0-%D0%BB%D1%83%D1%86%D1%8C%D0%BA'
+    response = requests.get(url)
+    html = response.content
+    soup = bs(html, 'html.parser')
+    result2 = soup.find_all(class_='today-temp')
+
+    print(result2)
+    return result2
+
+req()
