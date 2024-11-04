@@ -1,28 +1,49 @@
 import telebot
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup as b
+from PIL import Image
+from io import BytesIO
 
 bot = telebot.TeleBot('7625911800:AAGK0tIxiQaEs9mT5L7xyCz88rBEP-u8nhE')
+
 url_lutsk = 'https://ua.sinoptik.ua/%D0%BF%D0%BE%D0%B3%D0%BE%D0%B4%D0%B0-%D0%BB%D1%83%D1%86%D1%8C%D0%BA'
 url_kozun = 'https://ua.sinoptik.ua/%D0%BF%D0%BE%D0%B3%D0%BE%D0%B4%D0%B0-%D0%BA%D0%BE%D0%B7%D0%B8%D0%BD-303011312'
 url_yhovec = 'https://ua.sinoptik.ua/%D0%BF%D0%BE%D0%B3%D0%BE%D0%B4%D0%B0-%D1%83%D1%85%D0%BE%D0%B2%D0%B5%D1%86%D1%8C%D0%BA'
 
 def get_temper(url, min_or_max):
     response = requests.get(url)
-
     if response.status_code == 200:
-        soup = BeautifulSoup(response.text, 'html.parser')
-
+        soup = b(response.text, 'html.parser')
         min_temp = soup.select_one('.temperature .min')
-        min_temp_text = min_temp.get_text() if min_temp else "Not found"
-
         max_temp = soup.select_one('.temperature .max')
+
+        min_temp_text = min_temp.get_text() if min_temp else "Not found"
         max_temp_text = max_temp.get_text() if max_temp else "Not found"
 
         if min_or_max == 1:
             return min_temp_text
         elif min_or_max == 2:
             return max_temp_text
+
+def get_send_weather_photo(chat_id, url):
+    response = requests.get(url)
+    soup = b(response.text, 'html.parser')
+    image_url = 'https:' + soup.find('div', class_='img').img['src']
+
+    image_response = requests.get(image_url)
+    if image_response.status_code == 200:
+        image = Image.open(BytesIO(image_response.content))
+        photo_path = 'weather_image.jpg'
+        image.save(photo_path)
+
+        with open(photo_path, 'rb') as photo:
+            bot.send_photo(chat_id, photo)
+
+def get_weather_description(url):
+    response = requests.get(url)
+    soup = b(response.text, 'html.parser')
+    description = soup.find('div', class_='description')
+    return description.get_text() if description else "No description found"
 
 def universal(message, text, buttons):
     keyboard = telebot.types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=2)
@@ -32,13 +53,11 @@ def universal(message, text, buttons):
     for t in text:
         bot.send_message(message.chat.id, t, reply_markup=keyboard)
 
-
 @bot.message_handler(commands=['start'])
 def start(message):
     universal(message=message,
               text=['Вас вітає бот з рекомендаціям по рибалці)', 'Можу запропонувати місце для риболовлі)'],
               buttons=['Місце риболовлі'])
-
 
 @bot.message_handler(content_types=['text'])
 def options(message):
@@ -59,17 +78,26 @@ def options(message):
         universal(message=message, text=['Оберіть місце погоди:'],
                   buttons=['Погода р.Стир', 'Погода о.Ухове', 'Погода р.Лютиця', 'Головне меню'])
     elif message.text == 'Погода р.Стир':
-        universal(message=message, text=[{get_temper(url=url_lutsk, min_or_max=1)},
+        description = get_weather_description(url=url_lutsk)
+        universal(message=message, text=[description,{get_temper(url=url_lutsk, min_or_max=1)},
                                          {get_temper(url=url_lutsk, min_or_max=2)}],
                   buttons=['Сонячно', 'Дощ', 'Головне меню'])
+        get_send_weather_photo(message.chat.id, url=url_lutsk)
+
     elif message.text == 'Погода о.Ухове':
-        universal(message=message, text=[{get_temper(url=url_kozun, min_or_max=1)},
+        description = get_weather_description(url=url_kozun)
+        universal(message=message, text=[description,{get_temper(url=url_kozun, min_or_max=1)},
                                          {get_temper(url=url_kozun, min_or_max=2)}],
                   buttons=['Сонячно', 'Дощ', 'Головне меню'])
+        get_send_weather_photo(message.chat.id, url=url_kozun)
+
     elif message.text == 'Погода р.Лютиця':
-        universal(message=message, text=[{get_temper(url=url_yhovec, min_or_max=1)},
+        description = get_weather_description(url=url_yhovec)
+        universal(message=message, text=[description,{get_temper(url=url_yhovec, min_or_max=1)},
                                          {get_temper(url=url_yhovec, min_or_max=2)}],
                   buttons=['Сонячно', 'Дощ', 'Головне меню'])
+        get_send_weather_photo(message.chat.id, url=url_yhovec)
+
     elif message.text == 'Головне меню':
         universal(message=message, text=['Оберіть куди ви хочете повернутися:'],
                   buttons=['Місце риболовлі', 'Приколюхи', 'Погода'])
